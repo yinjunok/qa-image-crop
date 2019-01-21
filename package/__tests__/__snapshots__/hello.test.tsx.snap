@@ -1,8 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Link changes the class when hovered 1`] = `
+.c0 {
+  color: red;
+}
+
 <h1
-  className="Hello__H-jugud-0 kuwXGe"
+  className="c0"
 >
   Hello World
 </h1>

@@ -38,6 +38,7 @@
     "fork-ts-checker-webpack-plugin": "^0.5.2",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^23.6.0",
+    "jest-styled-components": "^6.3.1",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-test-renderer": "^16.7.0",
