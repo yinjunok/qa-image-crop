@@ -18,13 +18,13 @@ module.exports = {
   devtool: "inline-source-map",
 
   resolve: {
-    extensions: ['.js', '.json', 'ts', 'tsx']
+    extensions: ['.js', '.json', '.ts', '.tsx']
   },
 
   module: {
     rules: [
       {
-        test: /\.(ts|tsx)/,
+        test: /\.tsx?/,
         include: [
           path.resolve(__dirname, 'example'),
           path.resolve(__dirname, 'package')
@@ -45,7 +45,7 @@ module.exports = {
   },
 
   devServer: {
-    contentBase: './dist',
+    contentBase:  path.join(__dirname, 'dll'),
     hot: true,
   },
 
@@ -54,6 +54,9 @@ module.exports = {
       template: './example/template.html'
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new ForkTsCheckerWebpackPlugin()
+    new ForkTsCheckerWebpackPlugin(),
+    new webpack.DllReferencePlugin({
+      manifest: require('./dll/vendor-manifest.json')
+    })
   ]
 }

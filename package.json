@@ -4,8 +4,9 @@
   "main": "lib/main.js",
   "license": "MIT",
   "scripts": {
-    "dev": "webpack-dev-server --config webpack.config.dev.js --open",
-    "test": "jest"
+    "dev": "webpack-dev-server --config webpack.dev.config.js --open",
+    "test": "jest",
+    "dll": "webpack --config webpack.dll.config.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
