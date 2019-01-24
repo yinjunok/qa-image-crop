@@ -5,7 +5,7 @@ module.exports = {
     mode: 'development',
 
     entry:  {
-        vendor: ['react', 'react-dom']
+        vendor: ['react', 'react-dom', 'styled-components', '@babel/polyfill']
     },
     output: {
         path: path.resolve(__dirname, 'dll'),
