@@ -1,4 +1,7 @@
 {
   "extends": ["tslint:recommended", "tslint-react"],
-  "rules": {}
+  "rules": {
+    "quotemark": [true, "single"],
+    "ordered-imports": false,
+  }
 }

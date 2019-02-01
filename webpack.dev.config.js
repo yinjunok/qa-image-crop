@@ -15,7 +15,7 @@ module.exports = {
     libraryTarget: 'umd',
     pathinfo: false
   },
-  devtool: "inline-source-map",
+  devtool: "cheap-module-eval-source-map",
 
   resolve: {
     extensions: ['.js', '.json', '.ts', '.tsx']
@@ -29,15 +29,14 @@ module.exports = {
           path.resolve(__dirname, 'example'),
           path.resolve(__dirname, 'package')
         ],
-        exclude: path.resolve(__dirname, 'node_modules'),
         use: [
-          'cache-loader',
-          {
-            loader: 'thread-loader',
-            options: {
-              workers: os.cpus()
-            }
-          },
+          // 'cache-loader',
+          // {
+          //   loader: 'thread-loader',
+          //   options: {
+          //     workers: os.cpus()
+          //   }
+          // },
           'babel-loader'
         ]
       }

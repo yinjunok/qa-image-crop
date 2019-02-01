@@ -1,14 +1,14 @@
 import * as React from 'react';
 
 interface IPreviewProps {
-
+  src?: string;
 }
 
 class Preview extends React.Component<IPreviewProps, {}> {
-  render() {
+  public render() {
     return (
       <div>
-        预览
+        预览一遍
       </div>
     );
   }
