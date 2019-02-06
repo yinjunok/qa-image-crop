@@ -24,4 +24,5 @@ export const Img = s.img`
 export const CropArea = s.div`
   position: absolute;
   box-shadow: 0 0 0 9999em rgba(0, 0, 0, 0.5);
+  cursor: move;
 `;
