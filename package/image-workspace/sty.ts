@@ -7,6 +7,7 @@ export const Workspace = s.div`
   justify-content: center;
   align-items: center;
   user-select: none;
+  text-align: center;
 `;
 
 export const OperatingArea = s.div`

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import produce from 'immer';
 import * as S from './sty';
 
-interface IImageWorkspaceProps {
+export interface IImageWorkspaceProps {
   src?: string; // 图片地址
+  onCropComplete: (cropInfo: ICropInfo) => void;
 }
 
 interface IImageWorkspaceState {
@@ -16,16 +16,46 @@ interface IImageWorkspaceState {
   }
 }
 
+export interface ICropInfo {
+  width: number;
+  height: number;
+  top: number;
+  left: number;
+  // scaleRate: number;
+  source: HTMLImageElement;
+}
+
+const defaultCropInfo = () => ({
+  width: 0,
+  height: 0,
+  top: 0,
+  left: 0,
+});
+
 class ImageWorkspace extends React.Component<IImageWorkspaceProps, IImageWorkspaceState> {
+  static defaultProps = {
+    onCropComplete: () => {}
+  }
+  
   state = {
     //显示截图区域
     showCropArea: false,
     // 截图区域信息
-    cropInfo: {
-      width: 0,
-      height: 0,
-      top: 0,
-      left: 0,
+    cropInfo: defaultCropInfo()
+  }
+
+  componentWillUnmount() {
+    this.cleanListener();
+  }
+
+  componentDidUpdate(
+    prevProps: IImageWorkspaceProps,
+  ) {
+    if (prevProps.src !== this.props.src) {
+      this.setState({
+        showCropArea: false,
+        cropInfo: defaultCropInfo(),
+      })
     }
   }
 
@@ -37,7 +67,6 @@ class ImageWorkspace extends React.Component<IImageWorkspaceProps, IImageWorkspa
       <S.Workspace>
         <S.OperatingArea
           ref={this.operatingAreaRef}
-          // onClick={this.clickHandler}
           onMouseDown={this.mouseDownHandler}
         >
           <S.Img
@@ -51,7 +80,6 @@ class ImageWorkspace extends React.Component<IImageWorkspaceProps, IImageWorkspa
             showCropArea && 
               <S.CropArea
                 style={cropInfo}
-                // onMouseUp={this.cropMouseUpHandler}
                 onMouseDown={this.cropMouseDownHandler}
               />
           }
@@ -59,13 +87,18 @@ class ImageWorkspace extends React.Component<IImageWorkspaceProps, IImageWorkspa
       </S.Workspace>
     );
   }
+
+  private cleanListener = () => {
+    document.removeEventListener('mouseup', this.mouseUpHandler);
+    document.removeEventListener('mousemove', this.mouseMoveHandler);
+    document.removeEventListener('mousemove', this.cropMouseMoveHandler);
+  }
   
   private imgRef = React.createRef<HTMLImageElement>();
   private operatingAreaRef = React.createRef<HTMLDivElement>();
   private imgWidth: number = 0;
   private imgHeight: number = 0;
-  private naturalWidth: number = 0;
-  private naturalHeight: number = 0;
+  private scaleRate: number = 0;
 
   private mouseUpHandler = (e: MouseEvent) => {
     if (
@@ -75,14 +108,22 @@ class ImageWorkspace extends React.Component<IImageWorkspaceProps, IImageWorkspa
       this.setState({
         showCropArea: false,
       });
+    } else {
+      const { cropInfo } = this.state;
+      this.props.onCropComplete({
+        width: cropInfo.width * this.scaleRate,
+        height: cropInfo.height * this.scaleRate,
+        top: cropInfo.top * this.scaleRate,
+        left: cropInfo.left * this.scaleRate,
+        // scaleRate: this.scaleRate,
+        source: (this.imgRef.current as HTMLImageElement),
+      });
     }
     this.startPoint = {
       x: 0,
       y: 0,
     }
-    document.removeEventListener('mouseup', this.mouseUpHandler);
-    document.removeEventListener('mousemove', this.mouseMoveHandler);
-    document.removeEventListener('mousemove', this.cropMouseMoveHandler);
+    this.cleanListener();
   }
 
   private startPoint = {
@@ -147,8 +188,7 @@ class ImageWorkspace extends React.Component<IImageWorkspaceProps, IImageWorkspa
       const imgRect = img.getBoundingClientRect();
       this.imgWidth = imgRect.width;
       this.imgHeight = imgRect.height;
-      this.naturalWidth = img.naturalWidth;
-      this.naturalHeight = img.naturalHeight;
+      this.scaleRate = img.naturalWidth / this.imgWidth;
     }
   }
 
@@ -156,11 +196,6 @@ class ImageWorkspace extends React.Component<IImageWorkspaceProps, IImageWorkspa
     e.stopPropagation();
     document.addEventListener('mouseup', this.mouseUpHandler);
     document.addEventListener('mousemove', this.cropMouseMoveHandler);
-  }
-
-  private cropMouseUpHandler = (e: React.MouseEvent) => {
-    document.removeEventListener('mouseup', this.mouseUpHandler);
-    document.removeEventListener('mousemove', this.cropMouseMoveHandler);
   }
 
   private cropMouseMoveHandler = (e: MouseEvent) => {

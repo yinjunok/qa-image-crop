@@ -8,7 +8,7 @@ class Preview extends React.Component<IPreviewProps, {}> {
   public render() {
     return (
       <div>
-        预览一遍
+        <img src={this.props.src} />
       </div>
     );
   }
