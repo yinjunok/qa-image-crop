@@ -1,60 +1,53 @@
 import * as React from 'react';
 import * as S from './sty';
-import Preview from './preview/Preview';
-import ImageSelect from './image-select/ImageSelect';
-import produceCropImage from './produce-crop-image/produceCropImage';
-import ImageWorkspace, { ICropInfo } from './image-workspace/ImageWorkspace';
 
 interface ICropImageProps {
-  onCrop?: () => void;
+  src: string;
 }
 
-class CropImage extends React.Component<ICropImageProps, {}> {
-  
-  public state = {
-    src: '',
-    crop: '',
+export interface ICropInfo {
+  width: number;
+  height: number;
+  left: number;
+  top: number;
+}
+
+interface ICropImageState {
+  imgLoaded: boolean,
+  cropInfo: ICropInfo;
+}
+
+export default class CropImage extends React.Component<ICropImageProps, ICropImageState> {
+  state = {
+    imgLoaded: false,
+    cropInfo: {
+      width: 0,
+      height: 0,
+      left: 0,
+      top: 0,
+    }
   }
-
-  private imageSelect = React.createRef<ImageSelect>();
-
-  private selectImage = () => {
-    const { current: select } = this.imageSelect;
-    (select as ImageSelect).select();
-  }
-
-  public render() {
-    const { src } = this.state;
-
+  render() {
+    const { src } = this.props;
+    const { cropInfo } = this.state;
+    
     return (
       <S.Container>
-        <S.ImageArea>
-          <ImageWorkspace
-            src={src}
-            onCropComplete={this.onCropComplete}
-          />
-        </S.ImageArea>
-        <S.SideBar>
-          <Preview src={this.state.crop} />
-          <button onClick={this.selectImage}>选择图片</button>
-        </S.SideBar>
-        <ImageSelect ref={this.imageSelect} onSelect={this.selectHandler} />
+        {
+          src && <S.Img src={src} onLoad={this.imgLoad} />
+        }
+        <S.CropArea {...cropInfo} />
       </S.Container>
     );
   }
 
-  private onCropComplete = (crop: ICropInfo) => {
-    const img = produceCropImage(crop);
-    this.setState({
-      crop: img,
-    });
+  private mouseDown = (e: React.MouseEvent) => {
+
   }
 
-  private selectHandler = (src: string) => {
+  private imgLoad = () => {
     this.setState({
-      src,
+      imgLoaded: true,
     });
   }
 }
-
-export default CropImage;
