@@ -2,20 +2,26 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    mode: 'development',
+  mode: 'development',
 
-    entry:  {
-        vendor: ['react', 'react-dom', 'styled-components', '@babel/polyfill']
-    },
-    output: {
-        path: path.resolve(__dirname, 'dll'),
-        filename: 'dll_[name].js',
-        library: "[name]_[hash]"
-    },
-    plugins: [
-        new webpack.DllPlugin({
-            path: path.resolve(__dirname, "dll", "[name]-manifest.json"),
-            name: "[name]_[hash]"
-        })
+  entry:  {
+    vendor: [
+      'immer',
+      'react',
+      'react-dom',
+      '@babel/polyfill',
+      'styled-components',
     ]
+  },
+  output: {
+    path: path.resolve(__dirname, 'dll'),
+    filename: 'dll_[name].js',
+    library: "[name]_[hash]"
+  },
+  plugins: [
+    new webpack.DllPlugin({
+      path: path.resolve(__dirname, "dll", "[name]-manifest.json"),
+      name: "[name]_[hash]"
+    })
+  ]
 }

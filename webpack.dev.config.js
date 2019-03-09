@@ -37,7 +37,8 @@ module.exports = {
           //     workers: os.cpus()
           //   }
           // },
-          'babel-loader'
+          'babel-loader',
+          'react-hot-loader/webpack',
         ]
       }
     ]

@@ -15,7 +15,8 @@ const plugins = [
     "pure": true  
   }],
   "@babel/proposal-class-properties",
-  "@babel/proposal-object-rest-spread"
+  "@babel/proposal-object-rest-spread",
+  "react-hot-loader/babel"
 ]
 
 module.exports = {

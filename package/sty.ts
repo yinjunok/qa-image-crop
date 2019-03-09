@@ -13,24 +13,21 @@ export const Container = s.div`
 
 export const Img = s.img`
   display: block;
+  user-select: none;
 `;
 
-type CropAreaProps = ThemedStyledProps<ICropInfo, {}>;
+interface ICropAreaProps {
+  showCorpArea: boolean;
+}
+
 export const CropArea = s.div`
+  display: ${(props: ICropAreaProps) => {
+    return props.showCorpArea ? 'block' : 'none';
+  }};
   box-sizing: border-box;
   position: absolute;
   box-shadow: 0 0 0 9999em rgba(0, 0, 0, 0.5);
-  
-  left: ${(props: CropAreaProps) => {
-    return props.left;
-  }}
-  top: ${(props: CropAreaProps) => {
-    return props.top;
-  }}
-  width: ${(props: CropAreaProps) => {
-    return props.width;
-  }}
-  height: ${(props: CropAreaProps) => {
-    return props.height;
-  }}
+  border: 1px solid rgba(255, 0, 0, .5);
+  cursor: move;
+  outline: none;
 `;
