@@ -27,7 +27,13 @@ class CropArea extends React.PureComponent<ICropAreaProps, {}> {
         showCorpArea={showCorpArea}
         onMouseDown={this.mouseDown}
       >
-        <S.Dot vertical='left' horizontal='top' style={{ cursor: 'nwse-resize' }} />
+        <S.Dot 
+          vertical='left'
+          horizontal='top'
+          style={{ cursor: 'nwse-resize' }}
+          onMouseDown={this.dotMouseDown(this.initDir({width: { disW: 0, direction: 'left' }}))}
+        />
+
         <S.Dot vertical='center' horizontal='top' style={{ cursor: 'ns-resize' }} />
         <S.Dot vertical='right' horizontal='top' style={{ cursor: 'nesw-resize' }} />
 
@@ -92,6 +98,36 @@ class CropArea extends React.PureComponent<ICropAreaProps, {}> {
     }
   }
   
+  private dotOriginX = 0;
+  private dotOriginY = 0;
+  private initDir = (dir: {} | IResize) => {
+    const defaultDir: IResize = {
+      width: {
+        disW: 0,
+        direction: 'left',
+      },
+      height: {
+        disH: 0,
+        direction: null,
+      }
+    }
+
+    return {
+      ...defaultDir,
+      ...dir,
+    }
+  }
+  private dotMouseDown = (dir: IResize) => (e: React.MouseEvent) => {
+    const doc = document.documentElement;
+    doc.addEventListener('mousemove', this.dotMouseMove);
+    doc.addEventListener('mouseup', this.dotMouseUp);
+  };
+  private dotMouseMove = (e: MouseEvent) => {};
+  private dotMouseUp = () => {
+    const doc = document.documentElement;
+    doc.removeEventListener('mousemove', this.dotMouseMove);
+    doc.removeEventListener('mouseup', this.mouseUp);
+  }
 }
 
 export default CropArea;
