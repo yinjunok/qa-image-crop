@@ -1,27 +1,43 @@
 import * as React from 'react';
-import { ICropInfo } from './CropImage';
+import { ICropInfo, IResize } from './CropImage';
 import * as S from './sty';
 
 interface ICropAreaProps {
   cropInfo: ICropInfo;
   showCorpArea: boolean;
   move: (disX: number, disY: number) => void;
+  resize?: (params: IResize) => void;
 }
 
-class CropArea extends React.Component<ICropAreaProps, {}> {
+class CropArea extends React.PureComponent<ICropAreaProps, {}> {
   render() {
     const { cropInfo, showCorpArea } = this.props;
     return (
       <S.CropArea
         // https://developer.mozilla.org/zh-CN/docs/Web/HTML/Global_attributes/tabindex
         tabIndex={-1}
-        style={cropInfo}
+        style={{
+          width: cropInfo.width,
+          height: cropInfo.height,
+          transform: `translate3d(${cropInfo.left}px, ${cropInfo.top}px, 0)`,
+        }}
         draggable={false}
         ref={this.cropAreaRef}
         onKeyDown={this.keyDown}
         showCorpArea={showCorpArea}
         onMouseDown={this.mouseDown}
-      />
+      >
+        <S.Dot vertical='left' horizontal='top' style={{ cursor: 'nwse-resize' }} />
+        <S.Dot vertical='center' horizontal='top' style={{ cursor: 'ns-resize' }} />
+        <S.Dot vertical='right' horizontal='top' style={{ cursor: 'nesw-resize' }} />
+
+        <S.Dot vertical='right' horizontal='center' style={{ cursor: 'ew-resize' }} />
+        <S.Dot vertical='left' horizontal='center' style={{ cursor: 'ew-resize' }} />
+
+        <S.Dot vertical='left' horizontal='bottom' style={{ cursor: 'nesw-resize' }} />
+        <S.Dot vertical='center' horizontal='bottom' style={{ cursor: 'ns-resize' }} />
+        <S.Dot vertical='right' horizontal='bottom' style={{ cursor: 'nwse-resize' }} />
+      </S.CropArea>
     );
   }
   
@@ -75,6 +91,7 @@ class CropArea extends React.Component<ICropAreaProps, {}> {
         return;
     }
   }
+  
 }
 
 export default CropArea;

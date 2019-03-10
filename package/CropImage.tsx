@@ -20,6 +20,17 @@ interface ICropImageState {
   showCorpArea: boolean;
 }
 
+export interface IResize {
+  width: {
+    disW: number;
+    direction: 'left' | 'right' | null;
+  };
+  height: {
+    disH: number;
+    direction: 'top' | 'bottom' | null;
+  }
+}
+
 export default class CropImage extends React.Component<ICropImageProps, ICropImageState> {
   state = {
     imgLoaded: false,
@@ -56,6 +67,29 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
         />
       </S.Container>
     );
+  }
+
+  private resize = (params: IResize) => {
+    this.setState(produce((draft) => {
+      const { cropInfo } = this.state;
+      const { width, height } = params;
+  //    const { containerRect: rect } = this;
+  
+
+      if (width.direction === 'left') {
+        cropInfo.width += width.disW;
+        cropInfo.left += width.disW;
+      } else if (width.direction === 'right') {
+        cropInfo.width += width.disW;
+      }
+
+      if (height.direction === 'top') {
+        cropInfo.height += height.disH;
+        cropInfo.top += height.disH;
+      } else if (height.direction === 'bottom') {
+        cropInfo.height += height.disH;
+      }
+    }));
   }
 
   private containerRef = React.createRef<HTMLDivElement>();
@@ -96,8 +130,11 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
         left: e.x - this.containerRect.left,
         top: e.y - this.containerRect.top,
       };
-      cropInfo.width = pos.left - cropInfo.left;
-      cropInfo.height = pos.top - cropInfo.top;
+      const maxWidth = this.containerRect.width - cropInfo.left;
+      const maxHeight = this.containerRect.height - cropInfo.top;
+
+      cropInfo.width = this.rangeNum(pos.left - cropInfo.left, 0, maxWidth);
+      cropInfo.height = this.rangeNum(pos.top - cropInfo.top, 0, maxHeight);
     }));
   }
 
@@ -138,6 +175,7 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
     }
     return num;
   }
+
   private imgLoad = () => {
     this.setState({
       imgLoaded: true,
