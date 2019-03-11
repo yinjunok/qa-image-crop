@@ -228,7 +228,7 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
     return num;
   }
 
-  getCroppedImg() {
+  private getCroppedImg() {
     const canvas = document.createElement('canvas');
     const { cropInfo } = this.state;
     canvas.width = cropInfo.width;

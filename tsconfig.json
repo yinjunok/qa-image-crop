@@ -15,9 +15,11 @@
     // Import non-ES modules as default imports.
     "esModuleInterop": true,
     "jsx": "preserve",
+    // "typeRoots": [
+    //   "./node_modules"
+    // ]
   },
   "include": [
-    "example",
     "package",
   ]
 }

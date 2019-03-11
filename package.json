@@ -1,10 +1,13 @@
 {
-  "name": "react-crop-image",
+  "name": "react-simple-crop-image",
   "version": "1.0.0",
   "main": "lib/main.js",
+  "types": "./@types/CropImage.d.ts",
   "license": "MIT",
   "scripts": {
+    "tsc": "tsc",
     "dev": "webpack-dev-server --config webpack.dev.config.js --open",
+    "types": "tsc -d --emitDeclarationOnly --allowJs false --noEmit false --isolatedModules false --declarationDir ./@types",
     "build": "webpack --config webpack.build.config.js",
     "test": "jest",
     "dll": "webpack --config webpack.dll.config.js"
