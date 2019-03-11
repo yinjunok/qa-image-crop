@@ -1,6 +1,6 @@
 import * as React from 'react';
 import produce from 'immer';
-import CropArea from './CropArea';
+import CropArea, { ControllerPointer } from './CropArea';
 import * as S from './sty';
 
 interface ICropImageProps {
@@ -18,17 +18,6 @@ interface ICropImageState {
   imgLoaded: boolean,
   cropInfo: ICropInfo;
   showCorpArea: boolean;
-}
-
-export interface IResize {
-  width: {
-    disW: number;
-    direction: 'left' | 'right' | null;
-  };
-  height: {
-    disH: number;
-    direction: 'top' | 'bottom' | null;
-  }
 }
 
 export default class CropImage extends React.Component<ICropImageProps, ICropImageState> {
@@ -63,33 +52,42 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
         <CropArea
           cropInfo={cropInfo}
           move={this.moveCrop}
+          resize={this.resize}
           showCorpArea={showCorpArea}
         />
       </S.Container>
     );
   }
 
-  private resize = (params: IResize) => {
-    this.setState(produce((draft) => {
-      const { cropInfo } = this.state;
-      const { width, height } = params;
-  //    const { containerRect: rect } = this;
-  
-
-      if (width.direction === 'left') {
-        cropInfo.width += width.disW;
-        cropInfo.left += width.disW;
-      } else if (width.direction === 'right') {
-        cropInfo.width += width.disW;
+  private resize = (dir: ControllerPointer, disW: number, disH: number) => {
+    this.setState(produce((draft => {
+      const { cropInfo } = draft;
+      
+      if (dir.includes('l')) {
+        cropInfo.width -= disW;
       }
 
-      if (height.direction === 'top') {
-        cropInfo.height += height.disH;
-        cropInfo.top += height.disH;
-      } else if (height.direction === 'bottom') {
-        cropInfo.height += height.disH;
+      if (dir.includes('r')) {
+        cropInfo.width += disW;
       }
-    }));
+      
+      if (dir.includes('t')) {
+        cropInfo.height -= disH;
+      }
+      
+      if (dir.includes('b')) {
+        cropInfo.height += disH;
+      }
+      
+
+      if (dir.includes('t')) {
+        cropInfo.top += disH;
+      }
+
+      if (dir.includes('l')) {
+        cropInfo.left += disW;
+      }
+    })));
   }
 
   private containerRef = React.createRef<HTMLDivElement>();

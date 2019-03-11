@@ -1,13 +1,15 @@
 import * as React from 'react';
-import { ICropInfo, IResize } from './CropImage';
+import { ICropInfo } from './CropImage';
 import * as S from './sty';
 
 interface ICropAreaProps {
   cropInfo: ICropInfo;
   showCorpArea: boolean;
   move: (disX: number, disY: number) => void;
-  resize?: (params: IResize) => void;
+  resize: (dir: ControllerPointer, disW: number, disH: number) => void;
 }
+
+export type ControllerPointer = 't' | 'r' | 'b' | 'l' | 'tl' | 'tr' | 'bl' | 'br';
 
 class CropArea extends React.PureComponent<ICropAreaProps, {}> {
   render() {
@@ -27,22 +29,56 @@ class CropArea extends React.PureComponent<ICropAreaProps, {}> {
         showCorpArea={showCorpArea}
         onMouseDown={this.mouseDown}
       >
+        {/* 四个点 */}
         <S.Dot 
           vertical='left'
           horizontal='top'
           style={{ cursor: 'nwse-resize' }}
-          onMouseDown={this.dotMouseDown(this.initDir({width: { disW: 0, direction: 'left' }}))}
+          onMouseDown={this.dotMouseDown('tl')}
+        />
+        <S.Dot
+          vertical='left'
+          horizontal='bottom'
+          style={{ cursor: 'nesw-resize' }}
+          onMouseDown={this.dotMouseDown('bl')}
+        />
+        <S.Dot
+          vertical='right'
+          horizontal='bottom'
+          style={{ cursor: 'nwse-resize' }}
+          onMouseDown={this.dotMouseDown('br')}
+        />
+        <S.Dot
+          vertical='right'
+          horizontal='top'
+          style={{ cursor: 'nesw-resize' }}
+          onMouseDown={this.dotMouseDown('tr')}
         />
 
-        <S.Dot vertical='center' horizontal='top' style={{ cursor: 'ns-resize' }} />
-        <S.Dot vertical='right' horizontal='top' style={{ cursor: 'nesw-resize' }} />
-
-        <S.Dot vertical='right' horizontal='center' style={{ cursor: 'ew-resize' }} />
-        <S.Dot vertical='left' horizontal='center' style={{ cursor: 'ew-resize' }} />
-
-        <S.Dot vertical='left' horizontal='bottom' style={{ cursor: 'nesw-resize' }} />
-        <S.Dot vertical='center' horizontal='bottom' style={{ cursor: 'ns-resize' }} />
-        <S.Dot vertical='right' horizontal='bottom' style={{ cursor: 'nwse-resize' }} />
+        {/* 四条边 */}
+        <S.Dot vertical='center'
+          horizontal='top'
+          style={{ cursor: 'ns-resize' }}
+          onMouseDown={this.dotMouseDown('t')}
+        />
+        <S.Dot
+          vertical='right'
+          horizontal='center'
+          style={{ cursor: 'ew-resize' }}
+          onMouseDown={this.dotMouseDown('r')}
+        />
+        <S.Dot
+          vertical='left'
+          horizontal='center'
+          style={{ cursor: 'ew-resize' }}
+          onMouseDown={this.dotMouseDown('l')}
+        />
+        <S.Dot
+          vertical='center'
+          horizontal='bottom'
+          style={{ cursor: 'ns-resize' }}
+          onMouseDown={this.dotMouseDown('b')}
+        />
       </S.CropArea>
     );
   }
@@ -100,33 +136,31 @@ class CropArea extends React.PureComponent<ICropAreaProps, {}> {
   
   private dotOriginX = 0;
   private dotOriginY = 0;
-  private initDir = (dir: {} | IResize) => {
-    const defaultDir: IResize = {
-      width: {
-        disW: 0,
-        direction: 'left',
-      },
-      height: {
-        disH: 0,
-        direction: null,
-      }
-    }
-
-    return {
-      ...defaultDir,
-      ...dir,
-    }
-  }
-  private dotMouseDown = (dir: IResize) => (e: React.MouseEvent) => {
+  private dirPointer: ControllerPointer = 'tl';
+  private dotMouseDown = (dir: ControllerPointer) => (e: React.MouseEvent) => {
+    e.stopPropagation();
     const doc = document.documentElement;
     doc.addEventListener('mousemove', this.dotMouseMove);
     doc.addEventListener('mouseup', this.dotMouseUp);
+    this.dotOriginX = e.clientX;
+    this.dotOriginY = e.clientY;
+    this.dirPointer = dir;
   };
-  private dotMouseMove = (e: MouseEvent) => {};
+
+  private dotMouseMove = (e: MouseEvent) => {
+    e.stopPropagation();
+    this.props.resize(
+      this.dirPointer,
+      e.clientX - this.dotOriginX,
+      e.clientY - this.dotOriginY,
+    );
+    this.dotOriginX = e.clientX;
+    this.dotOriginY = e.clientY;
+  };
   private dotMouseUp = () => {
     const doc = document.documentElement;
     doc.removeEventListener('mousemove', this.dotMouseMove);
-    doc.removeEventListener('mouseup', this.mouseUp);
+    doc.removeEventListener('mouseup', this.dotMouseUp);
   }
 }
 
