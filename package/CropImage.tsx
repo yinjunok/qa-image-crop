@@ -21,6 +21,7 @@ interface ICropImageState {
 }
 
 export default class CropImage extends React.Component<ICropImageProps, ICropImageState> {
+
   state = {
     imgLoaded: false,
     showCorpArea: false,
@@ -29,6 +30,21 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
       height: 0,
       left: 0,
       top: 0,
+    }
+  }
+
+  componentDidUpdate(prevProps: ICropImageProps) {
+    if (prevProps.src !== this.props.src) {
+      this.setState({
+        imgLoaded: false,
+        showCorpArea: false,
+        cropInfo: {
+          width: 0,
+          height: 0,
+          left: 0,
+          top: 0,
+        }
+      });
     }
   }
 
@@ -47,6 +63,7 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
               src={src}
               draggable={false}
               onLoad={this.imgLoad}
+              onMouseMove={(e: React.MouseEvent) => e.preventDefault()}
             />
         }
         <CropArea
@@ -59,33 +76,42 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
     );
   }
 
+  /**
+   *
+   * 重新设置截图区域宽高尺寸
+   * @private
+   * @memberof CropImage
+   * @param {ControllerPointer} dir 哪个拖动控制点
+   * @param {number} disW 改变的宽度
+   * @param {number} disH 改变的高度
+   */
   private resize = (dir: ControllerPointer, disW: number, disH: number) => {
     this.setState(produce((draft => {
       const { cropInfo } = draft;
+      const { containerRect: rect } = this;
       
+      // 左边和上边的控制点需要同时改变宽高和定位
       if (dir.includes('l')) {
-        cropInfo.width -= disW;
+        const maxWidth = cropInfo.width + cropInfo.left;
+        cropInfo.width = this.rangeNum(cropInfo.width - disW, 0, maxWidth);
+        cropInfo.left = this.rangeNum(cropInfo.left + disW, 0, maxWidth);
       }
-
+      
+      if (dir.includes('t')) {
+        const maxHeight = cropInfo.height + cropInfo.top;
+        cropInfo.height = this.rangeNum(cropInfo.height - disH, 0, maxHeight);
+        cropInfo.top = this.rangeNum(cropInfo.top + disH, 0, maxHeight);
+      }
+      
+      // 下边和右边的控制点, 只需要改变宽度
       if (dir.includes('r')) {
-        cropInfo.width += disW;
+        const maxWidth = rect.width - cropInfo.left;
+        cropInfo.width = this.rangeNum(cropInfo.width + disW, 0, maxWidth);
       }
-      
-      if (dir.includes('t')) {
-        cropInfo.height -= disH;
-      }
-      
+
       if (dir.includes('b')) {
-        cropInfo.height += disH;
-      }
-      
-
-      if (dir.includes('t')) {
-        cropInfo.top += disH;
-      }
-
-      if (dir.includes('l')) {
-        cropInfo.left += disW;
+        const maxHeight = rect.height - cropInfo.top;
+        cropInfo.height = this.rangeNum(cropInfo.height + disH, 0, maxHeight);
       }
     })));
   }
@@ -140,11 +166,16 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
     const doc = document.documentElement;
     doc.removeEventListener('mousemove', this.mouseMove);
     doc.removeEventListener('mouseup', this.mouseUp);
-    // this.setState({
-    //   showCorpArea: false,
-    // })
   }
 
+  /**
+   * 移动截图区域
+   *
+   * @private
+   * @memberof CropImage
+   * @param {number} disX 横向移动距离
+   * @param {number} disY 纵向移动距离
+   */
   private moveCrop = (disX: number, disY: number) => {
     this.setState(produce(draft => {
       const { cropInfo } = draft;
@@ -158,6 +189,8 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
 
   /**
    * 保证 min <= num <= max
+   * @private
+   * @memberof CropImage
    * @param {number} num 要保证的数字
    * @param {number} min 最小范围
    * @param {number} max 最大范围

@@ -29,7 +29,7 @@ export const CropArea = s.div`
   left: 0;
   top: 0;
   box-shadow: 0 0 0 9999em rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 0, 0, .5);
+  border: 1px solid #fff;
   cursor: move;
   outline: none;
 `;
@@ -44,7 +44,8 @@ export const Dot = s.div`
   box-sizing: border-box;
   width: 10px;
   height: 10px;
-  background: red;
+  background: rgba(0, 0, 0, .3);
+  border: solid 1px rgba(255, 255, 255, .8);
 
   top: ${(props: IDot) => {
     switch(props.horizontal) {

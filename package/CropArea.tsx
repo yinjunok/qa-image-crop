@@ -29,7 +29,7 @@ class CropArea extends React.PureComponent<ICropAreaProps, {}> {
         showCorpArea={showCorpArea}
         onMouseDown={this.mouseDown}
       >
-        {/* 四个点 */}
+        {/* 四个顶点 */}
         <S.Dot 
           vertical='left'
           horizontal='top'
