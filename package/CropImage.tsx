@@ -5,6 +5,8 @@ import * as S from './sty';
 
 interface ICropImageProps {
   src: string;
+  onCrop?: (img: string | undefined) => void;
+  cropImgType?: 'blob' | 'base64'; // 待完成
 }
 
 export interface ICropInfo {
@@ -21,7 +23,9 @@ interface ICropImageState {
 }
 
 export default class CropImage extends React.Component<ICropImageProps, ICropImageState> {
-
+  static defaultProps = {
+    cropImgType: 'base64',
+  }
   state = {
     imgLoaded: false,
     showCorpArea: false,
@@ -61,6 +65,7 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
           src && 
             <S.Img
               src={src}
+              ref={this.imgRef}
               draggable={false}
               onLoad={this.imgLoad}
               onMouseMove={(e: React.MouseEvent) => e.preventDefault()}
@@ -113,10 +118,15 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
         const maxHeight = rect.height - cropInfo.top;
         cropInfo.height = this.rangeNum(cropInfo.height + disH, 0, maxHeight);
       }
-    })));
+    })), () => {
+      if (this.props.onCrop) {
+        this.props.onCrop(this.getCroppedImg());
+      }
+    });
   }
 
   private containerRef = React.createRef<HTMLDivElement>();
+  private imgRef = React.createRef<HTMLImageElement>();
   private containerRect: ClientRect = {
     width: 0,
     left: 0,
@@ -159,13 +169,20 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
 
       cropInfo.width = this.rangeNum(pos.left - cropInfo.left, 0, maxWidth);
       cropInfo.height = this.rangeNum(pos.top - cropInfo.top, 0, maxHeight);
-    }));
+    }), () => {
+      if (this.props.onCrop) {
+        this.props.onCrop(this.getCroppedImg());
+      }
+    });
   }
 
   private mouseUp = () => {
     const doc = document.documentElement;
     doc.removeEventListener('mousemove', this.mouseMove);
     doc.removeEventListener('mouseup', this.mouseUp);
+    if (this.props.onCrop) {
+      this.props.onCrop(this.getCroppedImg());
+    }
   }
 
   /**
@@ -184,7 +201,11 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
 
       cropInfo.left = this.rangeNum(cropInfo.left + disX, 0, maxLeft);
       cropInfo.top = this.rangeNum(cropInfo.top + disY, 0, maxTop);
-    }));
+    }), () => {
+      if (this.props.onCrop) {
+        this.props.onCrop(this.getCroppedImg());
+      }
+    });
   }
 
   /**
@@ -205,6 +226,31 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
       num = max;
     }
     return num;
+  }
+
+  getCroppedImg() {
+    const canvas = document.createElement('canvas');
+    const { cropInfo } = this.state;
+    canvas.width = cropInfo.width;
+    canvas.height = cropInfo.height;
+    const ctx = canvas.getContext('2d');
+
+    if (ctx !== null && this.imgRef.current !== null) {
+      const img = this.imgRef.current;
+      
+      ctx.drawImage(
+        img,
+        cropInfo.left,
+        cropInfo.top,
+        cropInfo.width,
+        cropInfo.height,
+        0,
+        0,
+        cropInfo.width,
+        cropInfo.height,
+      );
+      return canvas.toDataURL();
+    }
   }
 
   private imgLoad = () => {

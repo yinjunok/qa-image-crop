@@ -5,11 +5,13 @@
   "license": "MIT",
   "scripts": {
     "dev": "webpack-dev-server --config webpack.dev.config.js --open",
+    "build": "webpack --config webpack.build.config.js",
     "test": "jest",
     "dll": "webpack --config webpack.dll.config.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
+    "@types/react-hot-loader": "^4.1.0",
     "immer": "^2.0.0",
     "styled-components": "^4.1.3"
   },

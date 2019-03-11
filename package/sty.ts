@@ -1,12 +1,10 @@
-import s, { ThemedStyledProps } from 'styled-components';
-import { ICropInfo } from './CropImage';
+import s from 'styled-components';
 
 export const Container = s.div`
   position: relative;
   overflow: hidden;
   display: inline-block;
   max-width: 100%;
-  border: 1px solid red;
   background: black;
   cursor: crosshair;
 `;

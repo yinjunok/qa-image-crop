@@ -764,6 +764,14 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-hot-loader@^4.1.0":
+  version "4.1.0"
+  resolved "http://registry.npm.taobao.org/@types/react-hot-loader/download/@types/react-hot-loader-4.1.0.tgz#8e072b44331ad0182918228c5d2bf514646760de"
+  integrity sha1-jgcrRDMa0BgpGCKMXSv1FGRnYN4=
+  dependencies:
+    "@types/node" "*"
+    "@types/react" "*"
+
 "@types/react-test-renderer@^16.0.3":
   version "16.0.3"
   resolved "http://registry.npm.taobao.org/@types/react-test-renderer/download/@types/react-test-renderer-16.0.3.tgz#cce5c983d66cc5c3582e7c2f44b274ab635a8acc"

@@ -11,18 +11,28 @@ setConfig({
 class App extends React.Component {
   state = {
     src: '',
+    crop: '',
   };
 
   render() {
-    const { src } = this.state;
+    const { src, crop } = this.state;
     return (
       <>
         <input type='file' onChange={this.inputChange} />
         {
-          src && <CropImage src={src} />
+          src && <CropImage src={src} onCrop={this.onCrop} />
         }
+        <img src={crop} />
       </>
     );
+  }
+
+  private onCrop = (img: string | undefined) => {
+    if (img) {
+      this.setState({
+        crop: img
+      })
+    }
   }
 
   private inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
