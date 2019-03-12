@@ -19,9 +19,11 @@ class App extends React.Component {
     return (
       <>
         <input type='file' onChange={this.inputChange} />
-        {
-          src && <CropImage src={src} onCrop={this.onCrop} />
-        }
+        <div id="crop-img">
+          {
+            src && <CropImage src={src} onCrop={this.onCrop} />
+          }
+        </div>
         <img src={crop} />
       </>
     );

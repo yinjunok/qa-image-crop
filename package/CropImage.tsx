@@ -2,6 +2,7 @@ import * as React from 'react';
 import produce from 'immer';
 import CropArea, { ControllerPointer } from './CropArea';
 import * as S from './sty';
+import { rangeNum } from './utils';
 
 interface ICropImageProps {
   src: string;
@@ -58,6 +59,7 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
     
     return (
       <S.Container
+        id='crop-image'
         ref={this.containerRef}
         onMouseDown={this.mouseDown}
       >
@@ -98,25 +100,25 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
       // 左边和上边的控制点需要同时改变宽高和定位
       if (dir.includes('l')) {
         const maxWidth = cropInfo.width + cropInfo.left;
-        cropInfo.width = this.rangeNum(cropInfo.width - disW, 0, maxWidth);
-        cropInfo.left = this.rangeNum(cropInfo.left + disW, 0, maxWidth);
+        cropInfo.width = rangeNum(cropInfo.width - disW, 0, maxWidth);
+        cropInfo.left = rangeNum(cropInfo.left + disW, 0, maxWidth);
       }
       
       if (dir.includes('t')) {
         const maxHeight = cropInfo.height + cropInfo.top;
-        cropInfo.height = this.rangeNum(cropInfo.height - disH, 0, maxHeight);
-        cropInfo.top = this.rangeNum(cropInfo.top + disH, 0, maxHeight);
+        cropInfo.height = rangeNum(cropInfo.height - disH, 0, maxHeight);
+        cropInfo.top = rangeNum(cropInfo.top + disH, 0, maxHeight);
       }
       
       // 下边和右边的控制点, 只需要改变宽度
       if (dir.includes('r')) {
         const maxWidth = rect.width - cropInfo.left;
-        cropInfo.width = this.rangeNum(cropInfo.width + disW, 0, maxWidth);
+        cropInfo.width = rangeNum(cropInfo.width + disW, 0, maxWidth);
       }
 
       if (dir.includes('b')) {
         const maxHeight = rect.height - cropInfo.top;
-        cropInfo.height = this.rangeNum(cropInfo.height + disH, 0, maxHeight);
+        cropInfo.height = rangeNum(cropInfo.height + disH, 0, maxHeight);
       }
     })), () => {
       if (this.props.onCrop) {
@@ -167,8 +169,8 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
       const maxWidth = this.containerRect.width - cropInfo.left;
       const maxHeight = this.containerRect.height - cropInfo.top;
 
-      cropInfo.width = this.rangeNum(pos.left - cropInfo.left, 0, maxWidth);
-      cropInfo.height = this.rangeNum(pos.top - cropInfo.top, 0, maxHeight);
+      cropInfo.width = rangeNum(pos.left - cropInfo.left, 0, maxWidth);
+      cropInfo.height = rangeNum(pos.top - cropInfo.top, 0, maxHeight);
     }), () => {
       if (this.props.onCrop) {
         this.props.onCrop(this.getCroppedImg());
@@ -199,33 +201,13 @@ export default class CropImage extends React.Component<ICropImageProps, ICropIma
       const maxTop = this.containerRect.height - cropInfo.height;
       const maxLeft = this.containerRect.width - cropInfo.width;
 
-      cropInfo.left = this.rangeNum(cropInfo.left + disX, 0, maxLeft);
-      cropInfo.top = this.rangeNum(cropInfo.top + disY, 0, maxTop);
+      cropInfo.left = rangeNum(cropInfo.left + disX, 0, maxLeft);
+      cropInfo.top = rangeNum(cropInfo.top + disY, 0, maxTop);
     }), () => {
       if (this.props.onCrop) {
         this.props.onCrop(this.getCroppedImg());
       }
     });
-  }
-
-  /**
-   * 保证 min <= num <= max
-   * @private
-   * @memberof CropImage
-   * @param {number} num 要保证的数字
-   * @param {number} min 最小范围
-   * @param {number} max 最大范围
-   * @return {number} 返回被限制后的数字
-   */
-  private rangeNum = (num: number, min: number, max: number): number => {
-    if (num < min) {
-      num = min;
-    }
-
-    if (num > max) {
-      num = max;
-    }
-    return num;
   }
 
   private getCroppedImg() {

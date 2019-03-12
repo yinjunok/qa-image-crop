@@ -9,6 +9,10 @@ interface ICropAreaProps {
   resize: (dir: ControllerPointer, disW: number, disH: number) => void;
 }
 
+// t: top
+// r: right
+// b: bottom
+// l: left
 export type ControllerPointer = 't' | 'r' | 'b' | 'l' | 'tl' | 'tr' | 'bl' | 'br';
 
 class CropArea extends React.PureComponent<ICropAreaProps, {}> {
@@ -17,6 +21,7 @@ class CropArea extends React.PureComponent<ICropAreaProps, {}> {
     return (
       <S.CropArea
         // https://developer.mozilla.org/zh-CN/docs/Web/HTML/Global_attributes/tabindex
+        id="crop-area"
         tabIndex={-1}
         style={{
           width: cropInfo.width,
