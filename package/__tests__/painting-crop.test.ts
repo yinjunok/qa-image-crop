@@ -93,10 +93,43 @@ describe('移动选区', () => {
 
     expect(afterMoveRect.left).toBeCloseTo(beforeMoveRect.left + 90, 0);
     expect(afterMoveRect.top).toBeCloseTo(beforeMoveRect.top + 90, 0);
-    browser.close();
+    await browser.close();
   });
 
   it('键盘移动', async () => {
+    const { page, browser } = await initPage();
+    const crop = await page.$('#crop-image');
+    const cropRect = await getRect(page, crop);
 
+    await page.mouse.move(cropRect.left + 10, cropRect.top);
+    await page.mouse.down();
+    await page.mouse.move(cropRect.left + 100, cropRect.top + 100);
+    await page.mouse.up();
+
+    const cropArea = await page.$('#crop-area');
+
+    await page.focus('#crop-area');
+    // ArrowUp  ArrowLeft  ArrowRight  ArrowDown
+    await page.keyboard.down('ArrowLeft');
+    await page.keyboard.up('ArrowLeft');
+    let afterMoveRect = await getRect(page, cropArea);
+    expect(afterMoveRect.left).toBeCloseTo(cropRect.left + 9, 0);
+
+    await page.keyboard.down('ArrowRight');
+    await page.keyboard.up('ArrowRight');
+    afterMoveRect = await getRect(page, cropArea);
+    expect(afterMoveRect.left).toBeCloseTo(cropRect.left + 10, 0);
+
+    await page.keyboard.down('ArrowDown');
+    await page.keyboard.up('ArrowDown');
+    afterMoveRect = await getRect(page, cropArea);
+    expect(afterMoveRect.top).toBeCloseTo(cropRect.top + 1, 0);
+
+    await page.keyboard.down('ArrowUp');
+    await page.keyboard.up('ArrowUp');
+    afterMoveRect = await getRect(page, cropArea);
+    expect(afterMoveRect.top).toBeCloseTo(cropRect.top, 0);
+
+    await browser.close();
   });
 });
