@@ -7,7 +7,7 @@ const imgPath = path.resolve(process.cwd(), 'test-img/3.jpg');
 async function initPage() {
   const browser = await puppeteer.launch({
     executablePath: 'C:\\chromium\\chrome.exe',
-    headless: true
+    headless: false
   });
   const page = await browser.newPage();
   page.setViewport({

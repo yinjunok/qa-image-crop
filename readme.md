@@ -17,13 +17,13 @@ yarn add puppeteer --dev --ignore-scripts
 const puppeteer = require('puppeteer');
 
 (async () => {
-      const browser = await puppeteer.launch({
-        executablePath: './chromium/chrome.exe',
-        headless: false
-      });
-      const page = await browser.newPage();
-      await page.goto('http://music.163.com/');
-      await page.screenshot({path: 'music.png'});
-      browser.close();
+  const browser = await puppeteer.launch({
+    executablePath: './chromium/chrome.exe',
+    headless: false
+  });
+  const page = await browser.newPage();
+  await page.goto('http://music.163.com/');
+  await page.screenshot({path: 'music.png'});
+  browser.close();
 })();
 ```
